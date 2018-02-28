@@ -1,0 +1,34 @@
+extends layout
+
+block custom-scripts
+  script(defer='defer', src='https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js')
+  script(defer='defer', src='https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js')
+  script(defer='defer', src='/js/main.min.js')
+
+block content
+  .container-fluid
+    .row
+      .col
+        h1 Hacklab Mikkeli Päätöksenteko
+        p Valitse kokouksessa käsiteltävät asiat.
+    .row
+      .col
+        .list-group.issue-container
+      .col
+        .card
+          .card-body
+            .form-group
+              label(for='fileNameInput') Tiedostonimi
+              input#fileNameInput.form-control(type='text', aria-describedby='fileNameHelp', placeholder='Tiedostonimi')
+              small#fileNameHelp.form-text.text-muted Nimi jolla tiedosto tallennetaan Githubiin.
+            .form-group
+              label(for='commitMessageInput') Viesti
+              textarea#commitMessageInput.form-control(type='text', aria-describedby='commitMessageHelp')
+              small#commitMessageHelp.form-text.text-muted Viesti joka kuvaa käsiteltyjä muutoksia.
+            .form-group
+              button#commitBtn.btn.btn-success.float-right(type='button')
+                i.fa.fa-github
+                |  Commit
+    .row
+      .col
+        textarea#content-editor

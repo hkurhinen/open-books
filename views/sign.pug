@@ -1,0 +1,26 @@
+extends layout
+
+block custom-styles
+  link(rel='stylesheet', href='/styles/sign.css')
+
+block custom-scripts
+  script(src='https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js')
+  script(defer='defer', src='/js/sign.min.js')
+
+block content
+  .container
+    .card
+      .card-body
+        .row
+          .col
+            canvas.signature-canvas
+            p.small.text-center.sign-help Allekirjoita viivan yläpuolelle
+        .row.justify-content-between
+          .col
+            button.btn.btn-danger.float-left.clear-btn Tyhjennä
+          .col-6
+            h5.text-center
+              =name
+          .col
+            button.btn.btn-success.float-right.send-btn Lähetä
+  input#token(type='hidden', value=token)

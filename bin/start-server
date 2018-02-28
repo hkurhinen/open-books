@@ -1,0 +1,105 @@
+#!/usr/bin/env node
+
+(() => {
+  'use strict';
+  
+  /**
+   * Module dependencies.
+   */
+  const config = require('nconf');
+  const debug = require('debug')('open-books:server');
+  const http = require('http');
+  
+  config.file({file: __dirname + '/../config.json'});
+  const app = require('../app');
+  const models = require('../models');
+
+  class WebApp {
+
+    constructor(app) {
+      this.app = app;
+      this.port = this.normalizePort(process.env.PORT || '3000');
+      this.app.set('port', this.port);
+      this.server = http.createServer(this.app);
+    }
+
+    /**
+     * Listen on provided port, on all network interfaces.
+     */
+    startServer() {
+      this.server.listen(this.port);
+      this.server.on('error', this.onError.bind(this));
+      this.server.on('listening', this.onListening.bind(this));
+    }
+    
+    /**
+     * Normalize a port into a number, string, or false.
+     * @param {Int} val port number 
+     */
+    normalizePort(val) {
+      const port = parseInt(val, 10);
+
+      if (isNaN(port)) {
+        // named pipe
+        return val;
+      }
+
+      if (port >= 0) {
+        // port number
+        return port;
+      }
+
+      return false;
+    }
+    
+    /**
+     * Event listener for HTTP server "error" event.
+     * @param {Object} error Error
+     */
+    onError(error) {
+      if (error.syscall !== 'listen') {
+        throw error;
+      }
+
+      const bind = typeof this.port === 'string'
+        ? 'Pipe ' + this.port
+        : 'Port ' + this.port;
+
+      // handle specific listen errors with friendly messages
+      switch (error.code) {
+        case 'EACCES':
+          console.error(bind + ' requires elevated privileges');
+          process.exit(1);
+          break;
+        case 'EADDRINUSE':
+          console.error(bind + ' is already in use');
+          process.exit(1);
+          break;
+        default:
+          throw error;
+      }
+    }
+
+    /**
+     * Event listener for HTTP server "listening" event.
+     */
+    onListening() {
+      const addr = this.server.address();
+      const bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+      debug('Listening on ' + bind);
+    }
+
+  }
+
+  models.init().then(() => {
+    const webApp = new WebApp(app);
+    webApp.startServer();
+  }).catch((err) => {
+    console.error('Cannot connect to database', err);
+    process.exit(1);
+  });
+
+
+})();
